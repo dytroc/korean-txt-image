@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>텍스트 이미지 생성기 (256x256)</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f5f5f7;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 320px;
+        }
+        h1 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007aff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #downloadBtn {
+            background-color: #34c759;
+        }
+        #downloadBtn:hover {
+            background-color: #248a3d;
+        }
+        .canvas-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        canvas {
+            border: 2px solid #333;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>텍스트 이미지 생성기</h1>
+    <input type="text" id="textInput" placeholder="단어를 입력하세요" maxlength="10">
+    <br>
+    <button onclick="generateImage()">이미지 생성</button>
+    <button id="downloadBtn" onclick="downloadImage()" style="display: none;">다운로드</button>
+
+    <div class="canvas-container">
+        <canvas id="textCanvas" width="256" height="256"></canvas>
+    </div>
+</div>
+
+<script>
+    // 페이지 로드 시 초기 화면 캔버스 그리기
+    window.onload = function() {
+        const canvas = document.getElementById('textCanvas');
+        const ctx = canvas.getContext('256d' in window ? '2d' : '2d');
+        
+        ctx.fillStyle = '#e0e0e0';
+        ctx.fillRect(0, 0, 256, 256);
+        ctx.fillStyle = '#888';
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('256 x 256', 128, 128);
+    };
+
+    function generateImage() {
+        const text = document.getElementById('textInput').value.trim();
+        if (!text) {
+            alert('단어를 입력해주세요!');
+            return;
+        }
+
+        const canvas = document.getElementById('textCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 1. 배경 그리기 (흰색)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 256, 256);
+
+        // 2. 글자 스타일 설정
+        ctx.fillStyle = '#000000'; // 글자 색상 (검은색)
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // 글자 길이에 따라 폰트 크기 자동 조절
+        let fontSize = 40;
+        if (text.length > 5) fontSize = 24;
+        else if (text.length > 3) fontSize = 32;
+        
+        ctx.font = `bold ${fontSize}px 'Malgun Gothic', sans-serif`;
+
+        // 3. 정중앙(128, 128)에 글자 배치
+        ctx.fillText(text, 128, 128);
+
+        // 다운로드 버튼 표시
+        document.getElementById('downloadBtn').style.display = 'inline-block';
+    }
+
+    function downloadImage() {
+        const canvas = document.getElementById('textCanvas');
+        const text = document.getElementById('textInput').value.trim() || 'image';
+        
+        // 캔버스 내용을 이미지 URL로 변환 후 다운로드
+        const link = document.createElement('a');
+        link.download = `${text}_256x256.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+</script>
+
+</body>
+</html>
